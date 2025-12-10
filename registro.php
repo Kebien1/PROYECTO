@@ -1,6 +1,6 @@
 <?php
-include("bd.php");
-require_once __DIR__ . '/mail_config.php';
+include("includes/bd.php");
+require_once __DIR__ . '/includes/mail_config.php';
 
 function asegurarTablas(PDO $conexion) {
     $conexion->exec("CREATE TABLE IF NOT EXISTS verificacion_email (
@@ -36,7 +36,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 $error = 'El usuario o correo ya existe.';
             } else {
                 $hash = password_hash($Password, PASSWORD_BCRYPT);
-                $estado = 1; // activo por defecto (control administrativo)
+                $estado = 1; // activo por defecto
                 $verificado = 0; // pendiente verificación de correo
                 $stmt = $conexion->prepare('INSERT INTO usuario (Nick, Email, Password, Estado, Verificado, IdRol) VALUES (:Nick,:Email,:Password,:Estado,:Verificado,:IdRol)');
                 $stmt->execute([
@@ -59,6 +59,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 $mail->addAddress($Email, $Nick);
                 $mail->isHTML(true);
                 $mail->Subject = 'Verifica tu correo - PrograWeb I';
+                // Aseguramos que el enlace apunte correctamente (usando rutas relativas limpias)
                 $url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']) . '/verificar.php?token=' . urlencode($token);
                 $mail->Body = '<p>Hola ' . htmlspecialchars($Nick) . ',</p><p>Por favor verifica tu correo haciendo clic en el siguiente enlace:</p><p><a href="' . $url . '">Verificar cuenta</a></p><p>Si no solicitaste esta cuenta, ignora este mensaje.</p>';
                 $mail->send();
@@ -70,11 +71,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         }
     }
 }
-
-
 ?>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Registrarse</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
 <div class="container mt-5">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <?php if($mensaje): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <?php echo $mensaje; ?>
@@ -89,9 +96,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     <?php endif; ?>
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">Crear cuenta</div>
-                <div class="card-body">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">Crear cuenta</div>
+                <div class="card-body p-4">
                     <form method="post">
                         <div class="mb-3">
                             <label class="form-label">Usuario</label>
@@ -105,11 +112,18 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                             <label class="form-label">Contraseña</label>
                             <input type="password" name="Password" class="form-control" required>
                         </div>
-                        <button class="btn btn-primary" type="submit">Registrarme</button>
-                        <a class="btn btn-link" href="index.php">¿Ya tienes cuenta? Inicia sesión</a>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" type="submit">Registrarme</button>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <a class="btn btn-link" href="index.php">¿Ya tienes cuenta? Inicia sesión</a>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,52 +1,30 @@
-<?php include("autenticacion.php");
-include("bd.php");
+<?php 
+include("includes/autenticacion.php");
+include("includes/bd.php");
+
 if($_POST){
-
-    $Descrip=(isset($_POST["Descrip"])?$_POST["Descrip"]:"");
- 
-    
-
-    if($Descrip == "" ) {
-        $error = "Todos los campos son obligatorios";
-    } else {
-        
-        $sentencia=$conexion->prepare("INSERT INTO rol(Descrip)
-            VALUES (:Descrip)");
+    $Descrip = $_POST["Descrip"] ?? "";
+    if($Descrip){
+        $sentencia=$conexion->prepare("INSERT INTO rol(Descrip) VALUES (:Descrip)");
         $sentencia->bindParam(":Descrip",$Descrip);
         $sentencia->execute();
-        header("Location:index.php");
+        header("Location:rol.php");
         exit;
     }
 }
+include("includes/header.php"); 
 ?>
-<?php include("header.php") ?>
-<br> <br>
-<div class="card">
-    <div class="card-header">Datos del Rol</div>
+<div class="card shadow-sm mx-auto" style="max-width: 500px;">
+    <div class="card-header">Nuevo Rol</div>
     <div class="card-body">
-        <?php if(isset($error)) { ?>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-circle"></i>
-                <?php echo $error; ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        <?php } ?>
-        
-        <form action="" method="post" enctype="multipart/form-data">
+        <form method="post">
             <div class="mb-3">
-                <label for="Descrip" class="form-label">Rol:</label>
-                <input type="text" class="form-control form-control-lg" name="Descrip" id="Descrip" aria-describedby="helpId"
-                placeholder="Ingrese el nombre del rol" required>
-                <small id="helpId" class="form-text text-muted"></small>
+                <label class="form-label">Nombre del Rol:</label>
+                <input type="text" class="form-control" name="Descrip" required>
             </div>
-            
-          
-
-
-
-            <button type="submit" class="btn btn-success btn-lg">Guardar</button>
-            <a name="" id="" class="btn btn-primary btn-lg" href="index.php" role="button">Cancelar</a>
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <a href="rol.php" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
 </div>
-
+<?php include("includes/footer.php"); ?>
