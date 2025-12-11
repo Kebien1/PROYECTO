@@ -60,7 +60,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     <div class="col-md-5">
       <div class="card shadow-sm">
         <div class="card-header bg-primary text-white text-center">
-            <h4>Iniciar sesión</h4>
+            <h4>Iniciar sesión (Prueba GitHub)</h4>
         </div>
         <div class="card-body p-4">
           <?php if($error): ?>
